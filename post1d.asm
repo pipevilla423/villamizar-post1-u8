@@ -1,0 +1,73 @@
+
+; post1d.asm - REPE CMPSB: comparar cadenas
+; Compilar: nasm -f bin post1d.asm -o post1d.com
+
+ORG 100h
+
+section .text
+start:
+    ; Preparar ES = DS
+    mov ax, ds
+    mov es, ax
+
+    ; Caso 1: cad1 vs cad2 (iguales)
+    mov si, cad1
+    mov di, cad2
+    mov cx, 8
+    cld
+
+    repe cmpsb
+    je iguales1
+
+    mov ah, 09h
+    mov dx, msgDif
+    int 21h
+    jmp caso2
+
+iguales1:
+    mov ah, 09h
+    mov dx, msgIg
+    int 21h
+
+caso2:
+    ; Salto de linea
+    mov ah, 09h
+    mov dx, crlf
+    int 21h
+
+    ; Caso 2: cad1 vs cad3 (diferentes)
+    mov si, cad1
+    mov di, cad3
+    mov cx, 8
+    cld
+
+    repe cmpsb
+    je iguales2
+
+    mov ah, 09h
+    mov dx, msgDif
+    int 21h
+    jmp fin
+
+iguales2:
+    mov ah, 09h
+    mov dx, msgIg
+    int 21h
+
+fin:
+    mov ah, 09h
+    mov dx, crlf
+    int 21h
+
+    ; Terminar programa
+    mov ax, 4C00h
+    int 21h
+
+section .data
+    cad1   db "NASM x86",0
+    cad2   db "NASM x86",0
+    cad3   db "NASM ARM",0
+
+    msgIg  db "Iguales.$"
+    msgDif db "Diferentes.$"
+    crlf   db 0Dh,0Ah,"$"
